@@ -4,7 +4,8 @@
 
 ## 在线访问
 
-http://localhost/minesweeper/
+- GitHub Pages: https://aboutthepast.github.io/minesweeper/
+- 本地访问：http://localhost/minesweeper/
 
 ## 功能特性
 
