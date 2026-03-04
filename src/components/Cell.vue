@@ -26,6 +26,10 @@ const props = defineProps({
     type: Object,
     required: true
   },
+  index: {
+    type: Number,
+    required: true
+  },
   gameState: {
     type: String,
     default: 'ready'
@@ -110,7 +114,7 @@ function handleClick() {
     return
   }
   if (props.flagMode && !props.cell.isRevealed) {
-    emit('flag', props.cell)
+    emit('flag', props.index)
     return
   }
   emit('click')
@@ -118,7 +122,7 @@ function handleClick() {
 
 function handleRightClick(event) {
   event.preventDefault()
-  emit('flag', props.cell)
+  emit('flag', props.index)
 }
 
 function handleDoubleClick() {
@@ -129,7 +133,7 @@ function handleTouchStart() {
   isLongPress.value = false
   longPressTimer.value = setTimeout(() => {
     isLongPress.value = true
-    emit('flag', props.cell)
+    emit('flag', props.index)
   }, 500)
 }
 
@@ -140,7 +144,7 @@ function handleTouchEnd() {
   }
   if (!isLongPress.value) {
     if (props.flagMode && !props.cell.isRevealed) {
-      emit('flag', props.cell)
+      emit('flag', props.index)
       return
     }
     emit('click')
