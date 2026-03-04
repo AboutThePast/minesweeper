@@ -191,6 +191,7 @@ const resetButtonClass = computed(() => {
 
 function handleReset() {
   resetGame()
+  showModal.value = false
 }
 
 function handleReveal(index) {
