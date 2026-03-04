@@ -56,6 +56,7 @@ const emit = defineEmits(['click', 'contextmenu', 'dblclick', 'flag'])
 const longPressTimer = ref(null)
 const isLongPress = ref(false)
 const hasTriggeredFlag = ref(false)
+const isMouseDown = ref(false)
 
 // 数字颜色 - 浅色系主题适配
 const numberColors = {
@@ -112,18 +113,6 @@ const disabled = computed(() => {
   return props.gameState === 'won' || props.gameState === 'lost'
 })
 
-function handleClick() {
-  if (isLongPress.value) {
-    isLongPress.value = false
-    return
-  }
-  if (props.flagMode && !props.cell.isRevealed) {
-    emit('flag', props.index)
-    return
-  }
-  emit('click')
-}
-
 function handleRightClick(event) {
   event.preventDefault()
   emit('flag', props.index)
@@ -165,13 +154,19 @@ function handleTouchEnd() {
   emit('click')
 }
 
-// 鼠标长按支持（电脑端）
+// 鼠标长按支持（电脑端）- 仅在非旗帜模式下生效
 function handleMouseDown() {
   isLongPress.value = false
   hasTriggeredFlag.value = false
+  isMouseDown.value = true
+
+  // 旗帜模式下不需要长按，直接返回
+  if (props.flagMode) return
+
   longPressTimer.value = setTimeout(() => {
     isLongPress.value = true
     hasTriggeredFlag.value = true
+    isMouseDown.value = false
     emit('flag', props.index)
   }, 500)
 }
@@ -186,14 +181,17 @@ function handleMouseUp() {
   if (hasTriggeredFlag.value) {
     isLongPress.value = false
     hasTriggeredFlag.value = false
+    isMouseDown.value = false
     return
   }
 
-  // 短按：根据模式决定是点击还是插旗
-  if (props.flagMode && !props.cell.isRevealed) {
-    emit('flag', props.index)
+  // 旗帜模式下不处理 mouseup，交给 handleClick 处理
+  if (props.flagMode) {
+    isMouseDown.value = false
     return
   }
+
+  isMouseDown.value = false
   emit('click')
 }
 
@@ -202,6 +200,24 @@ function handleMouseLeave() {
   if (longPressTimer.value) {
     clearTimeout(longPressTimer.value)
     longPressTimer.value = null
+    isMouseDown.value = false
   }
+}
+
+function handleClick() {
+  // 如果刚处理过 mouseup，跳过 click 事件，避免重复触发
+  if (isMouseDown.value) {
+    isMouseDown.value = false
+    return
+  }
+  if (isLongPress.value) {
+    isLongPress.value = false
+    return
+  }
+  if (props.flagMode && !props.cell.isRevealed) {
+    emit('flag', props.index)
+    return
+  }
+  emit('click')
 }
 </script>
