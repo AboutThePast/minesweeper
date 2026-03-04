@@ -138,16 +138,17 @@ function handleTouchStart() {
 }
 
 function handleTouchEnd() {
+  // 如果定时器还在，说明用户提前松手（短按），清除定时器
   if (longPressTimer.value) {
     clearTimeout(longPressTimer.value)
     longPressTimer.value = null
-  }
-  if (!isLongPress.value) {
+    // 短按：根据模式决定是点击还是插旗
     if (props.flagMode && !props.cell.isRevealed) {
       emit('flag', props.index)
       return
     }
     emit('click')
   }
+  // 如果 isLongPress 为 true，说明长按已触发 flag 事件，不需要再做任何操作
 }
 </script>
