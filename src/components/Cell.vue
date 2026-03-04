@@ -49,16 +49,16 @@ const emit = defineEmits(['click', 'contextmenu', 'dblclick', 'flag'])
 const longPressTimer = ref(null)
 const isLongPress = ref(false)
 
-// 数字颜色 - 柔和鲜艳风格
+// 数字颜色 - 浅色系主题适配
 const numberColors = {
-  1: 'text-blue-500 font-black',
-  2: 'text-emerald-500 font-black',
-  3: 'text-red-500 font-black',
-  4: 'text-purple-600 font-black',
-  5: 'text-amber-600 font-black',
-  6: 'text-teal-500 font-black',
-  7: 'text-indigo-600 font-black',
-  8: 'text-pink-600 font-black'
+  1: 'text-blue-600 font-bold',
+  2: 'text-emerald-600 font-bold',
+  3: 'text-red-600 font-bold',
+  4: 'text-purple-600 font-bold',
+  5: 'text-amber-600 font-bold',
+  6: 'text-teal-600 font-bold',
+  7: 'text-indigo-600 font-bold',
+  8: 'text-pink-600 font-bold'
 }
 
 const cellClasses = computed(() => {
@@ -69,21 +69,21 @@ const cellClasses = computed(() => {
     ? 'w-8 h-8 text-base'  // 中级
     : 'w-10 h-10 text-lg'  // 初级
 
-  const base = `${sizeClass} flex items-center justify-center font-bold select-none rounded-md shadow-sm`
+  const base = `${sizeClass} flex items-center justify-center font-bold select-none transition-all duration-150`
 
   if (props.cell.isRevealed) {
     if (props.cell.isMine) {
-      return `${base} bg-gradient-to-br from-red-400 to-red-600`
+      return `${base} bg-gradient-to-br from-red-400 to-red-500 rounded-md shadow-inner`
     }
-    return `${base} bg-gradient-to-br from-white to-slate-100`
+    return `${base} bg-white rounded-md border border-slate-200 shadow-inner`
   }
 
   if (props.cell.isFlagged) {
-    return `${base} bg-gradient-to-br from-amber-400 to-orange-500 shadow-md`
+    return `${base} bg-gradient-to-br from-amber-400 to-orange-400 rounded-md shadow-md border border-amber-300`
   }
 
-  // 未揭开 - 柔和渐变带立体感
-  return `${base} bg-gradient-to-br from-slate-300 to-slate-400 border-t border-l border-white/50 cursor-pointer hover:from-slate-200 hover:to-slate-300 transition-colors`
+  // 未揭开 - 浅色渐变带立体感
+  return `${base} bg-gradient-to-br from-slate-100 to-slate-200 rounded-md border border-slate-300 cursor-pointer hover:from-slate-50 hover:to-slate-100 shadow-md hover:shadow-lg transition-all`
 })
 
 const showContent = computed(() => {
