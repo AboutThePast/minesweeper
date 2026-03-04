@@ -156,6 +156,8 @@ function clearLongPressTimer() {
 
 function handleRightClick(event) {
   event.preventDefault()
+  // 旗帜模式下不响应右键，避免与点击事件冲突
+  if (props.flagMode) return
   emit('flag', props.index)
 }
 
@@ -173,10 +175,16 @@ function handleTouchEnd() {
 
 // 鼠标长按支持（电脑端）
 function handleMouseDown() {
+  if (props.flagMode) return  // 旗帜模式下不需要长按
+  isMouseDown.value = true
   startLongPressTimer()
 }
 
 function handleMouseUp() {
+  if (props.flagMode) {
+    isMouseDown.value = false
+    return
+  }
   clearLongPressTimer()
 }
 
