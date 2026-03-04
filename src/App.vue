@@ -4,14 +4,9 @@
     <header class="h-16 bg-white/70 backdrop-blur-md border-b border-white/60 shadow-sm flex items-center justify-between px-6 shrink-0">
       <div class="flex items-center gap-4">
         <!-- 标题 -->
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-md shadow-blue-500/20">
-            <span class="text-xl">💎</span>
-          </div>
-          <div>
-            <h1 class="text-lg font-bold text-slate-700">扫雷</h1>
-            <p class="text-xs text-slate-400">Minesweeper</p>
-          </div>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">💣</span>
+          <h1 class="text-xl font-black text-slate-700">扫雷</h1>
         </div>
 
         <!-- 难度选择器 -->
