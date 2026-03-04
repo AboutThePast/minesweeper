@@ -216,6 +216,7 @@ export function useMinesweeper() {
     revealCell,
     toggleFlag,
     quickAction,
-    hintCertainMine
+    hintCertainMine,
+    stopTimer
   }
 }
