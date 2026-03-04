@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onUnmounted } from 'vue'
 import { useMinesweeper } from './composables/useMinesweeper.js'
 import GameBoard from './components/GameBoard.vue'
 import GameModal from './components/GameModal.vue'
@@ -130,7 +130,8 @@ const {
   revealCell,
   toggleFlag,
   quickAction,
-  hintCertainMine
+  hintCertainMine,
+  stopTimer
 } = useMinesweeper()
 
 const flagMode = ref(false)
@@ -202,14 +203,17 @@ function handleQuickAction(index) {
 }
 
 function handleHint() {
-  const found = hintCertainMine()
-  if (!found) {
-    console.log('当前没有可以确定的雷位置')
-  }
+  // 智能提示：自动标记地雷或揭开安全格子
+  hintCertainMine()
 }
 
 function handleCloseModal() {
   // 关闭弹窗，但保持游戏结束状态，让用户可以查看复盘
   showModal.value = false
 }
+
+// 组件卸载时清理定时器，防止内存泄漏
+onUnmounted(() => {
+  stopTimer()
+})
 </script>

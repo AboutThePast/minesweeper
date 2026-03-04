@@ -58,6 +58,9 @@ const isLongPress = ref(false)
 const hasTriggeredFlag = ref(false)
 const isMouseDown = ref(false)
 
+// 长按时长常量（毫秒）
+const LONG_PRESS_DURATION = 500
+
 // 数字颜色 - 浅色系主题适配
 const numberColors = {
   1: 'text-blue-600 font-bold',
@@ -113,6 +116,44 @@ const disabled = computed(() => {
   return props.gameState === 'won' || props.gameState === 'lost'
 })
 
+// 处理短按/点击事件
+function handleShortPress() {
+  if (props.flagMode && !props.cell.isRevealed) {
+    emit('flag', props.index)
+    return
+  }
+  emit('click')
+}
+
+// 启动长按定时器
+function startLongPressTimer() {
+  isLongPress.value = false
+  hasTriggeredFlag.value = false
+  longPressTimer.value = setTimeout(() => {
+    isLongPress.value = true
+    hasTriggeredFlag.value = true
+    emit('flag', props.index)
+  }, LONG_PRESS_DURATION)
+}
+
+// 清除长按定时器并处理结果
+function clearLongPressTimer() {
+  if (longPressTimer.value) {
+    clearTimeout(longPressTimer.value)
+    longPressTimer.value = null
+  }
+
+  // 如果长按已触发 flag 事件，重置状态并返回
+  if (hasTriggeredFlag.value) {
+    isLongPress.value = false
+    hasTriggeredFlag.value = false
+    return
+  }
+
+  // 短按处理
+  handleShortPress()
+}
+
 function handleRightClick(event) {
   event.preventDefault()
   emit('flag', props.index)
@@ -123,76 +164,20 @@ function handleDoubleClick() {
 }
 
 function handleTouchStart() {
-  isLongPress.value = false
-  hasTriggeredFlag.value = false
-  longPressTimer.value = setTimeout(() => {
-    isLongPress.value = true
-    hasTriggeredFlag.value = true
-    emit('flag', props.index)
-  }, 500)
+  startLongPressTimer()
 }
 
 function handleTouchEnd() {
-  // 如果定时器还在，说明用户提前松手（短按）
-  if (longPressTimer.value) {
-    clearTimeout(longPressTimer.value)
-    longPressTimer.value = null
-  }
-
-  // 如果长按已触发 flag 事件，直接返回
-  if (hasTriggeredFlag.value) {
-    isLongPress.value = false
-    hasTriggeredFlag.value = false
-    return
-  }
-
-  // 短按：根据模式决定是点击还是插旗
-  if (props.flagMode && !props.cell.isRevealed) {
-    emit('flag', props.index)
-    return
-  }
-  emit('click')
+  clearLongPressTimer()
 }
 
-// 鼠标长按支持（电脑端）- 仅在非旗帜模式下生效
+// 鼠标长按支持（电脑端）
 function handleMouseDown() {
-  isLongPress.value = false
-  hasTriggeredFlag.value = false
-  isMouseDown.value = true
-
-  // 旗帜模式下不需要长按，直接返回
-  if (props.flagMode) return
-
-  longPressTimer.value = setTimeout(() => {
-    isLongPress.value = true
-    hasTriggeredFlag.value = true
-    isMouseDown.value = false
-    emit('flag', props.index)
-  }, 500)
+  startLongPressTimer()
 }
 
 function handleMouseUp() {
-  if (longPressTimer.value) {
-    clearTimeout(longPressTimer.value)
-    longPressTimer.value = null
-  }
-
-  // 如果长按已触发 flag 事件，直接返回
-  if (hasTriggeredFlag.value) {
-    isLongPress.value = false
-    hasTriggeredFlag.value = false
-    isMouseDown.value = false
-    return
-  }
-
-  // 旗帜模式下不处理 mouseup，交给 handleClick 处理
-  if (props.flagMode) {
-    isMouseDown.value = false
-    return
-  }
-
-  isMouseDown.value = false
-  emit('click')
+  clearLongPressTimer()
 }
 
 function handleMouseLeave() {
@@ -214,10 +199,6 @@ function handleClick() {
     isLongPress.value = false
     return
   }
-  if (props.flagMode && !props.cell.isRevealed) {
-    emit('flag', props.index)
-    return
-  }
-  emit('click')
+  handleShortPress()
 }
 </script>
