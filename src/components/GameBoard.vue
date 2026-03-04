@@ -49,7 +49,7 @@ const props = defineProps({
 defineEmits(['reveal', 'flag', 'quick-action'])
 
 const boardClasses = computed(() => {
-  return 'grid gap-0.5 bg-slate-200 p-1 rounded-lg border border-slate-300 shadow-inner'
+  return 'grid gap-[2px] bg-slate-100 p-1 rounded-lg border border-slate-200 shadow-inner'
 })
 
 const boardStyle = computed(() => {
