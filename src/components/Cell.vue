@@ -7,6 +7,9 @@
     @dblclick="handleDoubleClick"
     @touchstart="handleTouchStart"
     @touchend="handleTouchEnd"
+    @mousedown="handleMouseDown"
+    @mouseup="handleMouseUp"
+    @mouseleave="handleMouseLeave"
   >
     <span v-if="showContent" :class="contentClasses">
       <template v-if="cell.isFlagged">🚩</template>
@@ -52,6 +55,7 @@ const emit = defineEmits(['click', 'contextmenu', 'dblclick', 'flag'])
 
 const longPressTimer = ref(null)
 const isLongPress = ref(false)
+const hasTriggeredFlag = ref(false)
 
 // 数字颜色 - 浅色系主题适配
 const numberColors = {
@@ -131,24 +135,73 @@ function handleDoubleClick() {
 
 function handleTouchStart() {
   isLongPress.value = false
+  hasTriggeredFlag.value = false
   longPressTimer.value = setTimeout(() => {
     isLongPress.value = true
+    hasTriggeredFlag.value = true
     emit('flag', props.index)
   }, 500)
 }
 
 function handleTouchEnd() {
-  // 如果定时器还在，说明用户提前松手（短按），清除定时器
+  // 如果定时器还在，说明用户提前松手（短按）
   if (longPressTimer.value) {
     clearTimeout(longPressTimer.value)
     longPressTimer.value = null
-    // 短按：根据模式决定是点击还是插旗
-    if (props.flagMode && !props.cell.isRevealed) {
-      emit('flag', props.index)
-      return
-    }
-    emit('click')
   }
-  // 如果 isLongPress 为 true，说明长按已触发 flag 事件，不需要再做任何操作
+
+  // 如果长按已触发 flag 事件，直接返回
+  if (hasTriggeredFlag.value) {
+    isLongPress.value = false
+    hasTriggeredFlag.value = false
+    return
+  }
+
+  // 短按：根据模式决定是点击还是插旗
+  if (props.flagMode && !props.cell.isRevealed) {
+    emit('flag', props.index)
+    return
+  }
+  emit('click')
+}
+
+// 鼠标长按支持（电脑端）
+function handleMouseDown() {
+  isLongPress.value = false
+  hasTriggeredFlag.value = false
+  longPressTimer.value = setTimeout(() => {
+    isLongPress.value = true
+    hasTriggeredFlag.value = true
+    emit('flag', props.index)
+  }, 500)
+}
+
+function handleMouseUp() {
+  if (longPressTimer.value) {
+    clearTimeout(longPressTimer.value)
+    longPressTimer.value = null
+  }
+
+  // 如果长按已触发 flag 事件，直接返回
+  if (hasTriggeredFlag.value) {
+    isLongPress.value = false
+    hasTriggeredFlag.value = false
+    return
+  }
+
+  // 短按：根据模式决定是点击还是插旗
+  if (props.flagMode && !props.cell.isRevealed) {
+    emit('flag', props.index)
+    return
+  }
+  emit('click')
+}
+
+function handleMouseLeave() {
+  // 鼠标离开格子时清除定时器
+  if (longPressTimer.value) {
+    clearTimeout(longPressTimer.value)
+    longPressTimer.value = null
+  }
 }
 </script>

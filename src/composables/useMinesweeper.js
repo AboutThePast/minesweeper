@@ -123,12 +123,13 @@ export function useMinesweeper() {
     if (gameState.value === 'won' || gameState.value === 'lost') return
     if (cell.isRevealed) return
 
-    // 首次点击：当成普通点击处理（揭开格子）
+    // 首次点击：揭开格子（开始游戏）
     if (firstClick.value) {
       revealCell(index)
       return
     }
 
+    // 切换旗帜状态
     if (cell.isFlagged) {
       cell.isFlagged = false
       flagCount.value--
