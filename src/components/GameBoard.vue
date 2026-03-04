@@ -6,6 +6,7 @@
     <Cell
       v-for="(cell, index) in board"
       :key="index"
+      :index="index"
       :cell="cell"
       :game-state="gameState"
       :flag-mode="flagMode"
